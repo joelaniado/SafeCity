@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+  <title>SafeCity</title>
+  <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+  <script type="text/javascript" src="../lib/topojson.v2.min.js"></script>
+  <script type="text/javascript" src="../lib/d3-geo-projection.v2.min.js"></script>
+  <script type="text/javascript" src="../lib/d3-dsv.min.js"></script>
+  <script type="text/javascript" src="../lib/d3-legend.min.js"></script>
+  <script type="module">
+
+  </script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+  <link rel="stylesheet" type="text/css" href="index.css">
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+</head>
+
+<body>
+  <div id="panel">
+    <h1>SafeCity</h1>
+    <p>Welcome to SafeCity. Please adjust the crime weights based on the type to calculate the Safety score, with 0 being the least important and 1 being the most impactful. Furthermore, select the time of day to visualize as well.</p>
+    <form>
+      <table>
+        <tr>
+          <td>
+            <label for="Drug" id="Drug" style="color:black">Drug related crime</label>
+          </td>
+          <td>
+            <input type="range" name="Drug" value="1" , max="1" min="0" step="0.05" class="slider" id="dru" oninput="updateTextInput('Dr',this.value);">
+          </td>
+          <td>
+            <output id="Dr">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Domestic" id="Domestic" style="font-weight: bold;">Domestic crime</label>
+          </td>
+          <td>
+            <input type="range" name="Domestic" value="1" , max="1" min="0" step="0.05" class="slider" id="dom" oninput="updateTextInput('Domesti',this.value);">
+          </td>
+          <td>
+            <output id="Domesti">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="human" id="Human Trafficking" style="font-weight: bold;">Human trafficking</label>
+          </td>
+          <td>
+            <input type="range" name="human" value="1" , max="1" min="0" step="0.05" class="slider" id="hum" oninput="updateTextInput('Human Traffickin',this.value);">
+          </td>
+          <td>
+            <output id="Human Traffickin">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Inchoate" id="Incholate" style="font-weight: bold;">Incholate crime</label>
+          </td>
+          <td>
+            <input type="range" name="Inchoate" value="1" , max="1" min="0" step="0.05" class="slider" id="inc" oninput="updateTextInput('Incholat',this.value);">
+          </td>
+          <td>
+            <output id="Incholat">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Property" id="Property" style="font-weight: bold;">Property Crime</label>
+          </td>
+          <td>
+            <input type="range" name="Property" value="1" , max="1" min="0" step="0.05" class="slider" id="pro" oninput="updateTextInput('Pr',this.value);">
+          </td>
+          <td>
+            <output id="Pr">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Sex" id="Sex" style="font-weight: bold;">Sex Crime</label>
+          </td>
+          <td>
+            <input type="range" name="Sex" value="1" , max="1" min="0" step="0.05" class="slider" id="sex" oninput="updateTextInput('Se',this.value);">
+          </td>
+          <td>
+            <output id="Se">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Statutory" id="Statutory" style="font-weight: bold;">Statutory Crime</label>
+          </td>
+          <td>
+            <input type="range" name="Statutory" value="1" , max="1" min="0" step="0.05" class="slider" id="sta" oninput="updateTextInput('Statutor',this.value);">
+          </td>
+          <td>
+            <output id="Statutor">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Theft" id="Theft" style="font-weight: bold;">Theft Crime</label>
+          </td>
+          <td>
+            <input type="range" name="Theft" value="1" , max="1" min="0" step="0.05" class="slider" id="the" oninput="updateTextInput('Thef',this.value);">
+          </td>
+          <td>
+            <output id="Thef">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="Violent" id="Violent" style="font-weight: bold;">Violent Crime</label>
+          </td>
+          <td>
+            <input type="range" name="Violent" value="1" , max="1" min="0" step="0.05" class="slider" id="vio" oninput="updateTextInput('Violen',this.value);">
+          </td>
+          <td>
+            <output id="Violen">1</output>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="White" id="White Collar" style="font-weight: bold;">White Collar Crime</label>
+          </td>
+          <td>
+            <input type="range" name="White" value="1" , max="1" min="0" step="0.05" class="slider" id="whi" oninput="updateTextInput('White Chola',this.value);">
+          </td>
+          <td>
+            <output id="White Chola">1</output>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <form>
+      <table>
+        <tr>
+          <td>
+          <input class= "container" type="radio" id="Day" name="fav_language" value="Day" onclick="updatetime('Day')">
+          <label for="Day" style="margin:1em">Day</label>
+          </td>
+          <td>
+          <input class= "container" type="radio" id="Night" name="fav_language" value="Night" onclick="updatetime('Night')">
+          <label for="Night" style="margin:1em">Night</label>
+          </td>
+          <td>
+          <input class= "container" type="radio" id="Both" name="fav_language" value="Both" onclick="updatetime('Both')">
+          <label for="Both" style="margin:1em">Both</label>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <h1 id="t1"></h1>
+    <p id="p2">Our mission is to help people be better informed on the types of crimes by neighborhood in Los Angeles.</p>
+    <p id="p3">Each type of crime is assigned a color which is then visualized in the map. Each dot represents an instance of said crime in the last year.</p>
+    <p id="p4">To use it you can hover over each neighborhood and it will display it's name. Once selected, the neighborhoods Safety score will be displayed.</p>
+  </div>
+  <div id="map"></div>
+
+
+  <script>
+    var tooltip = d3.select("body")
+      .append("div")
+      .attr("id", "tooltip")
+      .attr("class", "hidden")
+
+    //Sets coordinates for interactive map
+    var map = L.map('map').setView([34.019023, -118.241483], 11);
+
+    //Creates map with specs
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiamxhbmlhZG8zIiwiYSI6ImNrdmc5MGt4MWJ4dnoycW1heGFtYm83MzEifQ.8LwCiqDTNGzlZY03CbZYMA', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'pk.eyJ1IjoiamxhbmlhZG8zIiwiYSI6ImNrdmc5MGt4MWJ4dnoycW1heGFtYm83MzEifQ.8LwCiqDTNGzlZY03CbZYMA'
+    }).addTo(map);
+
+    //adds svg to map as an overlay of the mapbox interactive map
+    L.svg().addTo(map)
+    var overlay = d3.select(map.getPanes().overlayPane)
+    var svg = overlay.select('svg')
+    var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+    //Read data
+    Promise.all([
+      //neighborhood data
+      d3.json("data/updated_LA.json"),
+      d3.dsv(",", "data/allcrimes.csv") //backk
+    ]).then((values) => {
+      geodata = values[0]
+      data = values[1]
+
+      data = getRandomSubarraypartial(data,20000)
+
+      var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+
+      var transform = d3.geoTransform({
+          point: projectPoint
+        }),
+        path = d3.geoPath().projection(transform);
+
+      var feature = g.selectAll("path")
+        .data(geodata.features)
+        .enter()
+        .append("path")
+        .attr('fill-opacity', function(d){
+          if (d.crime === undefined) {
+            return 0.4
+          } else {
+            return 0.2
+          }
+        })
+        .attr('fill','grey')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 2.5)
+        .style("pointer-events", "auto")
+        .on("mouseover", function(d) {
+          d3.select(this).attr("fill", "red")
+          d3.select(this).attr("stroke", "red")
+        }).on("mouseout", function() {
+          d3.select(this).attr("fill", "grey")
+          d3.select(this).attr("stroke", "black")
+        }).on("click", function(d, i) {
+          if (d.crime === undefined) {
+            var crimeIn = "Im sorry. There is not enough data to make an accurate assesment."
+            var safety = "Im sorry. There is not enough data to make an accurate assesment. More data will be collected and this neighborhood will be released in V2."
+            d3.select("#t1").text(d.properties.name)
+            d3.select("#p2").text(safety)
+            d3.select("#p3").text("")
+            d3.select("#p4").text("")
+          } else {
+            var crime_indxes = safety_score(geodata.features)
+            var crimeIn = Math.round((index_crime(d.crime) / (d.properties.population / 1000)) * 100) / 100
+            console.log(crime_indxes)
+            var pos = crime_indxes.map(i => i.neighborhood).indexOf(d.properties.name)
+            var len = parseFloat(crime_indxes.length)
+            var safety = Math.round((1/len)*pos*100*100)/100
+            console.log(pos)
+            console.log(len)
+            console.log(safety)
+            d3.select("#t1").text(d.properties.name)
+            d3.select("#p2").text("The safety index is: " + safety)
+            d3.select("#p3").text("This score means that " + d.properties.name + " is safer than " + safety
+            + "% of all the neighborhoods with available data in the map." )
+            d3.select("#p4").text("")
+
+          }
+        });
+
+      var points = g.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr('fill-opacity', 0.6)
+        .attr("cx", d => map.latLngToLayerPoint([d.LAT, d.LON]).x)
+        .attr("cy", d => map.latLngToLayerPoint([d.LAT, d.LON]).y)
+        .attr("r", "6px")
+        .attr("fill", function(d,i){
+          ct = d["Crime.Cat"]
+          if (ct === "Violent "){
+            ct = "Violent"
+          }
+          const colors = colorScale(ct)
+          document.getElementById(ct).style.color = colors
+          return colors
+        })
+
+
+
+
+      const onZoom = function() {
+        feature.attr('d', path).append("title")
+          // Do this to maintain access to the features you drew
+          .datum(function(d) {
+            return d;
+          })
+          .text(function(d) {
+            return d.properties.name;
+          });
+        points
+          .attr("cx", d => map.latLngToLayerPoint([d.LAT, d.LON]).x)
+          .attr("cy", d => map.latLngToLayerPoint([d.LAT, d.LON]).y);
+      }
+      // initialize positioning
+      onZoom()
+      // reset whenever map is moved
+      map.on('zoomend', onZoom)
+
+    });
+
+    /////////////////////////////////////////////////////////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////////
+
+    function projectPoint(x, y) {
+      var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+      this.stream.point(point.x, point.y);
+    }
+
+    //Updates values for range input label
+    function updateTextInput(id, val) {
+      document.getElementById(id).value = val;
+    }
+
+
+    //Function that calculates the safety index for each neighborhood.
+    function safety_score(features){
+      s_score = new Array()
+      for (var n = 0; n < features.length; n++){
+        if (features[n].crime != undefined){
+          s_score.push({"neighborhood":features[n].properties.name,"score":(index_crime(features[n].crime) / (features[n].properties.population / 1000))})
+        }
+      }
+      s_score.sort((a, b) => {
+          return b.score - a.score;
+        });
+      return s_score
+    }
+
+    //Function that calculates the crime index for all neighborhoods
+    function index_crime(crimes) {
+      if (crimes.length > 0) {
+        ci = 0
+        for (var i = 0; i < crimes.length; i++) {
+          day = crimes[i].days
+          ctype = crimes[i]["Simplified Crime Category"]
+          weight = 0
+          switch (ctype) {
+            case "Property":
+              weight = parseFloat(document.getElementById("pro").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Violent":
+              weight = parseFloat(document.getElementById("vio").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Theft":
+              weight = parseFloat(document.getElementById("the").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Statutory":
+              weight = parseFloat(document.getElementById("sta").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Domestic":
+              weight = parseFloat(document.getElementById("dom").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Incholate":
+              weight = parseFloat(document.getElementById("inc").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "White Collar":
+              weight = parseFloat(document.getElementById("whi").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Sex":
+              weight = parseFloat(document.getElementById("sex").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Human Trafficking":
+              weight = parseFloat(document.getElementById("hum").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Violent ":
+              weight = parseFloat(document.getElementById("vio").value) * (0.999 ** day)
+              ci += weight
+              break
+            case "Drug":
+              weight = parseFloat(document.getElementById("dru").value) * (0.999 ** day)
+              ci += weight
+              break
+          }
+        }
+        return ci
+      } else {
+        return -1
+
+      }
+    }
+
+    function getRandomSubarraypartial(arr, size) {
+        var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
+        while (i-- > min) {
+            index = Math.floor((i + 1) * Math.random());
+            temp = shuffled[index];
+            shuffled[index] = shuffled[i];
+            shuffled[i] = temp;
+        }
+        return shuffled.slice(min);
+    }
+
+    //Function to get a sample of all the crimes in the last year for the visualization.
+    function getRandomSubarraytrue(arr, size) {
+        var shuffled = arr.slice(0), i = arr.length, temp, index;
+        while (i--) {
+            index = Math.floor((i + 1) * Math.random());
+            temp = shuffled[index];
+            shuffled[index] = shuffled[i];
+            shuffled[i] = temp;
+        }
+        return shuffled.slice(0, size);
+    }
+
+    //Function used to filter by time on each crime of the viz
+    function updatetime(time) {
+      d3.selectAll("circle").attr('fill-opacity',function(d){
+        var hour = d["Time"].split(":")
+        if (time === "Day" & (parseInt(hour[0]) < 6 | parseInt(hour[0]) >= 18)){
+          return 0
+        } else if (time === "Night" & parseInt(hour[0]) >= 6 & parseInt(hour[0]) < 18){
+          return 0
+        } else {
+        return 0.6
+      }
+      })
+    }
+
+    //function to join data, should not be used once data is integrated.
+    function join_data(json, data) {
+      for (var j = 0; j < json.features.length; j++) {
+        json.features[j].crimes = new Array()
+      }
+      for (var i = 0; i < data.length; i++) {
+
+        //Grab country name
+        var dataNeigh = data[i].Neighborhood;
+
+        //Grab data value, and convert from string to float
+        var pop = parseInt(data[i]["Population"]);
+        var days = parseInt(data[i]["days"])
+        var crime = data[i]["Simplified.Crime.Category"]
+
+
+        //Find the corresponding state inside the GeoJSON
+        for (var j = 0; j < json.features.length; j++) {
+          var jsonNeigh = json.features[j].properties.name;
+          if (dataNeigh == jsonNeigh) {
+            //Copy the data value into the JSON
+            json.features[j].properties.pop = pop;
+            json.features[j].crimes.push({
+              'days': days,
+              'crime': crime
+            })
+            //Stop looking through the JSON
+          }
+        }
+      }
+      return json;
+    }
+  </script>
+</body>

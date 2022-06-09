@@ -1,0 +1,83 @@
+
+#Drug {
+  font-weight: bold;
+}
+
+#map {
+  width: 75%;
+  height: 100vh;
+  float: right;
+}
+
+#panel {
+  width: 25%;
+  height: 100vh;
+  float: left;
+  background: #FCECDD;
+}
+
+.container {
+  cursor: pointer;
+  margin-left: 3em;
+  margin-top: 2em;
+  background-color: #FCECDD;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+h1 {
+  color: #FF6701;
+  margin-left: 1.2em;
+}
+
+output {
+  color: #FF6701;
+  font-size: 150%;
+  margin-left: 3.5em;
+
+}
+
+p {
+  color: #FF6701;
+  font-size: 150%;
+  margin: 1.5em;
+  white-space: pre-line;
+}
+
+
+
+label {
+  color:#FF6701;;
+  font-size: 150%;
+  margin: 1.5em;
+}
+
+
+.slider{
+ -webkit-appearance:none;
+ width:150%;
+ height: 5px;
+ border-radius: 5px;
+ background:#FFC288;
+ border:none;
+ outline:none;
+ opacity: 0.7;
+ -webkit-transition: .2s;
+}
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #FF6701;
+  cursor: pointer;
+}
