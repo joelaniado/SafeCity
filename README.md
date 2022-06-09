@@ -1,7 +1,9 @@
 # SafeCity
 ![safecity4](https://user-images.githubusercontent.com/46609198/172941820-5bfb699a-9086-460c-bb91-67ccb2e3a7f9.PNG)
 ## Overview 
-Welcome to SafeCity. Inside the file named "CODE" you will find all the code that is absolutely necessary to run the web app. 
+Welcome to SafeCity. An interactive web application made using HTML, CSS, and D3.JS to report on the level of safety in different neighborhoods based on the type of crimes commited. The project poster and paper can be found inside the DOCS folder. 
+
+Inside the file named "CODE" you will find all the code that is absolutely necessary to run the web app. 
 
 This includes the following:
 * index.html: Main file with most of the code used to generate a d3 interactive application for the user, this includes all the html and javascript of the app.
